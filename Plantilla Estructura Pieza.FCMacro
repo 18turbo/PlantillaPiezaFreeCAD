@@ -1,0 +1,268 @@
+import FreeCAD
+from PySide import QtCore, QtGui
+
+# Autor:			18Turbo
+# Fecha:		1-07-2022
+# Versión:		1.3.0
+#	
+# Funcionalidad:	Crea una estructura de una pieza con una serie de subcarpetas dentro con varios nombres
+#
+# Descripción:	Al pinchar la macro (o el botón en la barra de herramientas), su comportamiento siempre es la de crear una pieza
+#				con una serie de directorios (grupos) dentro (que lo define el array del principio de la macro). El nombre de la pieza se le da
+#                a través de una ventana. Si se pulsa 'Crear' sin nada escrito, pondrá el texto que pone FreeCAD por defecto.
+#
+# Modificaciones del Usuario:
+#				Al cambiar "listaGrupos" en la línea de código con las cadenas que uno desee, se crean el número de directorios
+#				(grupos) con el nombre de cada elemento de la lista. Es completamente MODIFICABLE. Si listaGrupos fuese
+#				listaGrupos = ['AA',BB'], siempre crearía dos directorios dentro de la pieza, uno con el nombre AA y otro con el nombre BB.
+#
+# Notas de versiones:
+# v.1.3.0:		Ahora al pulsar <Return> tras introducir el nombre, crea la pieza con la estructura que hay seleccionada
+#				Se aumenta la capacidad visual de los checkbox a 7
+#				Corrección de errores
+# v.1.2.0:		Se implementa una caja de información para indicar al usuario cómo cambiar los nombres de los grupos (idea
+#					de Rafael García Rodríguez) 
+#				Se crean unos checkbox por defecto para marcar los directorios que se quieren crear
+# v.1.0.0		Creada ventana donde pide el nombre de la pieza
+# v.0.9.8:		Inicial candidata.
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# ***************** MODIFICABLE *******************
+#
+listaGrupos = ['Imágenes','Referencias','Bocetos','Curvas','Superficies','Auxiliares','Sólidos','Redondeos','Anotaciones']
+#
+# ***************FIN MODIFICABLE ******************
+
+longitudListaGrupos = len(listaGrupos)
+
+
+htmlInfoUso = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\
+<html><head><meta name="qrichtext" content="1" /><style type="text/css">\
+p, li { white-space: pre-wrap; }\
+</style></head><body style=" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;">\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">Descripción:</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">\
+Este script (macro) genera una estructura de grupos (directorios) en una pieza, de manera que sea más fácil organizar las distintas operaciones,referencias \
+y objetos de esa pieza. Los grupos inicialmente están predefinidos, pero pueden ser cambiados fácilmente.</p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">\
+El nombre de los directorios (grupos) aparece en la <span style=" font-weight:600;">línea 40</span> del código de este script de la siguiente forma:</p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">\
+<span style=" font-style:italic; color:#3465a4;">listaGrupos = [\'Referencias\',\'Bocetos\',\'Curvas\',\'Superficies\',\'Operaciones\',\'Sólidos\']</span><span style=" color:#3465a4;"> </span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Esta línea \
+<span style=" text-decoration: underline;">se puede cambiar por los nombres que se deseen, siempre que estén entre comillas simples y separados por comas</span>. Vea los ejemplos siguientes:</p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">Ejemplo 1:</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-style:italic;">\
+listaGrupos = [\'Sketches\',\'Referencias\',\'Curvas\',\'Superficies\',\'Operaciones\',\'Sólidos\']</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">Ejemplo 2:</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-style:italic;">\
+listaGrupos = [\'Bocetos\',\'Referencias\',\'Curvas\',\'Superficies\',\'Sólidos\']</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">Ejemplo 3:</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-style:italic;">\
+listaGrupos = [\'Carpeta1\',\'Carpeta2\',\'CarpetaBasura\']</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">Consejos de uso:</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">\
+Por el momento es mejor no crear una lista de más de 7 elementos (aunque se puede). Si aumenta la lista, vea las FAQs más abajo en esta documentación.</p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">FAQ (Preguntas Frecuentes):</span></p>\
+<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">\
+P.-</span> He metido 8 elementos pero en la ventana solo me aparecen 7, ¿por qué?</p>\
+<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-weight:600;">\
+R.-</span> El script funciona correctamente. No se ha controlado en esta versión el cómo mostrar más de 7 checkbox, por lo que, \
+aunque no los muestre en pantalla, todos serán generados por el script. La única consideración es que los grupos de más no\
+pueden deseleccionarse, por lo que se generarán siempre.</p></body></html>\
+'
+
+
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
+
+class Ui_MainWindow(object):
+
+     def __init__(self, MainWindow):
+        self.window = MainWindow
+
+        MainWindow.setObjectName(_fromUtf8("MainWindow"))
+        MainWindow.resize(870, 380)
+        self.centralWidget = QtGui.QWidget(MainWindow)
+        self.centralWidget.setGeometry(QtCore.QRect(10, 10, 861, 371))
+        self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
+
+        self.etiquetaNombrePieza = QtGui.QLabel(self.centralWidget)
+        self.etiquetaNombrePieza.setGeometry(QtCore.QRect(290, 13, 151, 20))
+        self.etiquetaNombrePieza.setObjectName(_fromUtf8("label"))
+
+        self.edicionNombrePieza = QtGui.QLineEdit(self.centralWidget)
+        self.edicionNombrePieza.setGeometry(QtCore.QRect(450, 10, 291, 25))
+        self.edicionNombrePieza.setToolTip("Si no se introduce un nombre, se pondrá el que pone FreeCAD por defecto")
+        self.edicionNombrePieza.setObjectName(_fromUtf8("lineEdit"))
+        self.edicionNombrePieza.returnPressed.connect(self.on_botonCrear_clicked)
+
+        self.etiquetaInfo = QtGui.QLabel(self.centralWidget)
+        self.etiquetaInfo.setGeometry(QtCore.QRect(20, 60, 211, 20))
+        self.etiquetaInfo.setObjectName(_fromUtf8("label"))
+
+        self.infoUso = QtGui.QTextBrowser(self.centralWidget)
+        self.infoUso.setGeometry(QtCore.QRect(20, 90, 611, 212))
+        self.infoUso.setObjectName(_fromUtf8("textBrowser"))
+
+        self.grupo = QtGui.QGroupBox(self.centralWidget)
+        self.grupo.setGeometry(QtCore.QRect(640, 60, 201, 241))
+        self.grupo.setObjectName(_fromUtf8("groupBox"))
+
+        self.etiquetaDirectorios = QtGui.QLabel(self.centralWidget)
+        self.etiquetaDirectorios.setGeometry(QtCore.QRect(640, 60, 170, 20))
+        self.etiquetaDirectorios.setObjectName(_fromUtf8("label"))
+
+        self.elemento0 = QtGui.QCheckBox(self.centralWidget)
+        self.elemento0.setGeometry(QtCore.QRect(650, 90, 93, 23))
+        self.elemento0.setCheckable(True)
+        self.elemento0.setChecked(True)
+        self.elemento0.setObjectName(_fromUtf8("checkBox"))
+
+        if longitudListaGrupos > 1:
+            self.elemento1 = QtGui.QCheckBox(self.centralWidget)
+            self.elemento1.setGeometry(QtCore.QRect(650, 120, 93, 23))
+            self.elemento1.setCheckable(True)
+            self.elemento1.setChecked(True)
+            self.elemento1.setObjectName(_fromUtf8("checkBox"))
+        if longitudListaGrupos > 2:
+            self.elemento2 = QtGui.QCheckBox(self.centralWidget)
+            self.elemento2.setGeometry(QtCore.QRect(650, 150, 93, 23))
+            self.elemento2.setCheckable(True)
+            self.elemento2.setChecked(True)
+            self.elemento2.setObjectName(_fromUtf8("checkBox"))
+        if longitudListaGrupos > 3:
+            self.elemento3 = QtGui.QCheckBox(self.centralWidget)
+            self.elemento3.setGeometry(QtCore.QRect(650, 180, 93, 23))
+            self.elemento3.setCheckable(True)
+            self.elemento3.setChecked(True)
+            self.elemento3.setObjectName(_fromUtf8("checkBox"))
+        if longitudListaGrupos > 4:
+            self.elemento4 = QtGui.QCheckBox(self.centralWidget)
+            self.elemento4.setGeometry(QtCore.QRect(650, 210, 93, 23))
+            self.elemento4.setCheckable(True)
+            self.elemento4.setChecked(True)
+            self.elemento4.setObjectName(_fromUtf8("checkBox"))
+        if longitudListaGrupos > 5:
+            self.elemento5 = QtGui.QCheckBox(self.centralWidget)
+            self.elemento5.setGeometry(QtCore.QRect(650, 240, 93, 23))
+            self.elemento5.setCheckable(True)
+            self.elemento5.setChecked(True)
+            self.elemento5.setObjectName(_fromUtf8("checkBox"))
+        if longitudListaGrupos > 6:
+            self.elemento6 = QtGui.QCheckBox(self.centralWidget)
+            self.elemento6.setGeometry(QtCore.QRect(650, 270, 93, 23))
+            self.elemento6.setCheckable(True)
+            self.elemento6.setChecked(True)
+            self.elemento6.setObjectName(_fromUtf8("checkBox"))
+
+        self.botonCrear = QtGui.QPushButton(self.centralWidget)
+        self.botonCrear.setGeometry(QtCore.QRect(740, 330, 91, 25))
+        self.botonCrear.setObjectName(_fromUtf8("pushButton"))
+        self.botonCrear.clicked.connect(self.on_botonCrear_clicked)
+
+        MainWindow.setCentralWidget(self.centralWidget)
+
+        self.retranslateUi(MainWindow)
+
+
+     def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(_translate("MainWindow", "Crear estructura en una Pieza", None))
+        self.etiquetaNombrePieza.setText(_translate("MainWindow", "Nombre de la Pieza:", None))
+        self.etiquetaInfo.setText(_translate("MainWindow", "Información de Uso:", None))
+        self.edicionNombrePieza.setText(_translate("MainWindow", "", None))
+        self.infoUso.setHtml(_translate("MainWindow", htmlInfoUso, None))
+        self.grupo.setTitle(_translate("MainWindow", "Directorios (Grupos) a crear:", None))
+        self.elemento0.setText(_translate("MainWindow", listaGrupos[0], None))
+        if longitudListaGrupos > 1: self.elemento1.setText(_translate("MainWindow", listaGrupos[1], None))
+        if longitudListaGrupos > 2: self.elemento2.setText(_translate("MainWindow", listaGrupos[2], None))
+        if longitudListaGrupos > 3: self.elemento3.setText(_translate("MainWindow", listaGrupos[3], None))
+        if longitudListaGrupos > 4: self.elemento4.setText(_translate("MainWindow", listaGrupos[4], None))
+        if longitudListaGrupos > 5: self.elemento5.setText(_translate("MainWindow", listaGrupos[5], None))
+        if longitudListaGrupos > 6: self.elemento6.setText(_translate("MainWindow", listaGrupos[6], None))
+        self.botonCrear.setText(_translate("MainWindow", "Crear", None))
+
+
+     def on_botonCrear_clicked(self):
+        
+        if len(str(self.edicionNombrePieza.displayText())) >= 1:        
+            nombrePieza = str(self.edicionNombrePieza.displayText())
+        else:
+            nombrePieza = 'Part'
+
+        App.activeDocument().Tip = App.activeDocument().addObject('App::Part','Part')
+        App.ActiveDocument.recompute()
+
+        listaChecked = [True,True,True,True,True,True,True]
+
+        for nombrePart in FreeCAD.ActiveDocument.Objects:
+            if nombrePart.Name.find('Part') > -1:
+                nombrePartUltimo = nombrePart.Name
+        App.activeDocument().getObject(nombrePartUltimo).Label = nombrePieza     
+
+        if longitudListaGrupos > 0:
+            if self.elemento0.checkState() == 0: listaChecked[0] = False
+        if longitudListaGrupos > 1:
+            if self.elemento1.checkState() == 0: listaChecked[1] = False
+        if longitudListaGrupos > 2:
+            if self.elemento2.checkState() == 0: listaChecked[2] = False
+        if longitudListaGrupos > 3:
+            if self.elemento3.checkState() == 0: listaChecked[3] = False
+        if longitudListaGrupos > 4:
+            if self.elemento4.checkState() == 0: listaChecked[4] = False
+        if longitudListaGrupos > 5:
+            if self.elemento5.checkState() == 0: listaChecked[5] = False
+        if longitudListaGrupos > 6:
+            if self.elemento6.checkState() == 0: listaChecked[6] = False
+            for num in range(longitudListaGrupos-6-1,longitudListaGrupos):
+                listaChecked.append(True)                  
+
+        contador = 0
+        for labelGrupo in listaGrupos:
+
+            if (listaChecked[contador]):
+                App.activeDocument().Tip = App.activeDocument().addObject('App::DocumentObjectGroup','Group')
+                nombreGrupo = App.activeDocument().ActiveObject.Name
+                App.activeDocument().getObject(nombreGrupo).Label = labelGrupo+' ('+nombrePieza+')'
+                App.activeDocument().getObject(nombrePartUltimo).addObject(App.activeDocument().getObject(nombreGrupo))
+            contador = contador +1
+
+        self.window.hide()
+
+MainWindow = QtGui.QMainWindow()
+ui = Ui_MainWindow(MainWindow)
+MainWindow.show()
