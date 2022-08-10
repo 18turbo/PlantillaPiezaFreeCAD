@@ -9,7 +9,7 @@ Es una script de FreeCAD que crea una plantilla de grupos para cada pieza que fo
 3. En la ventana que aparece, pincha en el botón de la derecha "Crear"
 4. Pon un nombre para la macro, por ejemplo: "Plantilla Pieza", y pincha en Aceptar.
 5. Aparecerá una pestaña de FreeCAD en blanco.
-6. Copia el contenido del fichero **Hacer_OFFSET.FCMacro** y peǵalo a la ventana en blanco. Para hacerlo, abre el fichero con cualquier editor de texto, selecciona TODO, cópialo con CTRL-C y pégalo en el documento en blanco con CTRL-V
+6. Copia el contenido del fichero **Plantilla Estructura Pieza.FCMacro** y peǵalo a la ventana en blanco. Para hacerlo, abre el fichero con cualquier editor de texto, selecciona TODO, cópialo con CTRL-C y pégalo en el documento en blanco con CTRL-V
 7. Pincha en **Archivo --> Guardar**
 8. Cierra la pestaña.
 9. Vuelve a ir  al menú superior **Macro --> Macros...**
@@ -24,3 +24,6 @@ Es una script de FreeCAD que crea una plantilla de grupos para cada pieza que fo
 18. Selecciona la macro de la izquierda y pulsa la flecha a la derecha "-->" y verás que pasa la macro a la barra creada.
 19. Pincha en "Cerrar" en todas las ventanas.
 20. Aunque el proceso está hecho, es posible que no veas el icono de la barra hasta que cambies de banco de trabajo o reinicies FreeCAD.
+
+### Información de Uso
+
