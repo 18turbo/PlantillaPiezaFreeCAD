@@ -30,31 +30,3 @@ Es una script de FreeCAD que crea una plantilla de grupos para cada pieza que fo
 **Descripción:**
 
 Este script (macro) genera una estructura de grupos (directorios) en una pieza, de manera que sea más fácil organizar las distintas operaciones,referencias y objetos de esa pieza. Los grupos inicialmente están predefinidos, pero pueden ser cambiados fácilmente.
-
-El nombre de los directorios (grupos) aparece en la **línea 40** del código de este script de la siguiente forma:
-
-listaGrupos = ['Referencias','Bocetos','Curvas','Superficies','Operaciones','Sólidos'] 
-
-Esta línea se puede cambiar por los nombres que se deseen, siempre que estén entre comillas simples y separados por comas. Vea los ejemplos siguientes:
-
-**Ejemplo 1:**
-
-listaGrupos = ['Sketches','Referencias','Curvas','Superficies','Operaciones','Sólidos']
-
-**Ejemplo 2:**
-
-listaGrupos = ['Bocetos','Referencias','Curvas','Superficies','Sólidos']
-
-**Ejemplo 3:**
-
-listaGrupos = ['Carpeta1','Carpeta2','CarpetaBasura']
-
-
-### Consejos de uso:
-
-Por el momento es mejor no crear una lista de más de 7 elementos (aunque se puede). Si aumenta la lista, vea las FAQs más abajo en esta documentación.
-
-### FAQ (Preguntas Frecuentes):
-
-P.- He metido 8 elementos pero en la ventana solo me aparecen 7, ¿por qué?
-R.- El script funciona correctamente. No se ha controlado en esta versión el cómo mostrar más de 7 checkbox, por lo que, aunque no los muestre en pantalla, todos serán generados por el script. La única consideración es que los grupos de más no pueden deseleccionarse, por lo que se generarán siempre.
