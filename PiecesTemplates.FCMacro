@@ -116,6 +116,28 @@ strLang = [
         "List Pieces Created:",
         "Number of Pieces Created:"
 
+    ],
+    [ # Italiano
+        ## Strings for translation into any language (Italian strings)
+        "Creatore di strutture delle Parti",
+        "Il documento non è attivo",
+        "Creazione delle Parti",
+        "Nome della Parte:",
+        "Informazioni per l'uso:",
+        "Gruppi/Cartelle da creare:",
+        "Crea la struttura della Parte",
+        "Versione:",
+        "Descrizione:",
+        "Informazioni",
+        "Questo script (macro) genera una struttura di gruppi (cartelle) in una nuova parte, in modo che sia più semplice organizzare le varie operazioni, i riferimenti e gli elementi di questa parte.",
+        "I gruppi inizialmente risultano predefiniti, però si possono modificare facilmente.",
+        "Operazioni sui Gruppi",
+        "Aggiungi Gruppo",
+        "Elimina Gruppo",
+        "per primo",
+        "per ultimo",
+        "Lista delle parti create:",
+        "Nº di parti create:" 
     ]
         ]
 
@@ -391,7 +413,7 @@ lang = gui.getLocale()
 g_num_lang = 1
 if 'Spanish' in lang:
     g_num_lang = 0
-#elif 'Italian' in lang:
-#    g_num_lang = 2
+elif 'Italian' in lang:
+    g_num_lang = 2
 panel = PiecesTemplates()
 gui.Control.showDialog(panel)
