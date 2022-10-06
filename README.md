@@ -1,6 +1,8 @@
 # PlantillaPiezaFreeCAD (PiecesTemplates)
 Es una script de FreeCAD que crea una plantilla de grupos para cada pieza que formemos
 
+(English): This script (macro) generates a structure of groups (directories) in a part, so that it is easier to organize the different operations, references, and objects of that part.
+
 ### Instalación detallada
 
 1. Copia todo el contenido de este script (macro) a tu ordenador, en la carpeta "macros" de tu FreeCAD.
